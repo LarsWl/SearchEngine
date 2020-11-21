@@ -12,6 +12,7 @@ describe 'Schema' do
     describe '#defining_json_schema' do
       let(:expected_schema) do
         Dry::Schema.Params do
+          required(:id).filled(:integer)
           required(:attr1).filled(:integer)
           required(:attr2).array(:string)
           required(:attr3).hash do

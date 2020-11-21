@@ -58,6 +58,7 @@ test_collection = []
   test_collection << DummyIndexingModel.new(i, i % 2, arr, hash)
 end
 
+test_collection.each(&:index_object)
 def test_search
   DummyIndexingModel.search
 end

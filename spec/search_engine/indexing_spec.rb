@@ -44,6 +44,7 @@ describe 'Indexing' do
 
         let(:expected_hash) do
           {
+              id: test_object.id,
             attr1: test_object.attr1,
             attr2: test_object.attr2,
             attr3: test_object.attr3
@@ -64,6 +65,7 @@ describe 'Indexing' do
 
             def as_indexed_json
               {
+                  id: id,
                 attr1: attr1 * 2,
                 attr2: attr2 + ['test4'],
                 attr3: attr3
@@ -85,6 +87,7 @@ describe 'Indexing' do
 
         let(:expected_hash) do
           {
+              id: test_object.id,
             attr1: test_object.attr1 * 2,
             attr2: test_object.attr2 << 'test4',
             attr3: test_object.attr3
@@ -113,7 +116,7 @@ describe 'Indexing' do
         indexed_object = DummyIndexingModel.index_schema.call(test_object.as_indexed_json)
 
         {
-          test_object.id => indexed_object
+          test_object.id.to_s.to_sym => indexed_object
         }
       end
 

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'json'
 
 module SearchEngine
   # Module responsible for indexing elements in collection
@@ -19,7 +20,10 @@ module SearchEngine
       def create_index!
         raise IndexException, 'Index already exist' unless @search_index.nil?
 
-        @search_index = {}
+        @search_index = SearchIndex.new(index_schema: @index_schema)
+        @search_index_state = {}
+
+        initialize_dump_counter
       rescue StandardError => e
         e.message
       end
@@ -36,6 +40,7 @@ module SearchEngine
         delete_index!
         create_index!
       end
+
     end
 
     module InstanceMethods
@@ -53,11 +58,19 @@ module SearchEngine
       end
 
       def index_object
-        indexed_object = self.class.index_schema.call(as_indexed_json)
-
         raise IndexException, 'Index doesnt exist' if self.class.search_index.nil?
 
-        self.class.search_index[id] = indexed_object
+        indexed_object = self.class.index_schema.call(as_indexed_json)
+
+        return if indexed_object.errors.messages.size > 0
+
+        self.class.search_index[id.to_s.to_sym] = indexed_object
+
+        Thread.new do
+          self.class.increase_dump_counter
+
+          self.class.dump_index_to_file if self.class.need_dump?
+        end.join
 
         indexed_object
       rescue StandardError => e

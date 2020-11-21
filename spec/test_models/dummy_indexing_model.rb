@@ -7,6 +7,10 @@ class DummyIndexingModel
 
   attr_accessor :id, :attr1, :attr2, :attr3
 
+  index_configuration do |config|
+    config.dump_enable = false
+  end
+
   define_json_schema do
     id :integer
 

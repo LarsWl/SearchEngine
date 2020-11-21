@@ -20,69 +20,129 @@ module SearchEngine
   end
 
   class Query
-    class QueryStatement
-      attr_accessor :subject, :condition
+    attr_reader :default_options, :query_hash
 
-      def initialize(subject = nil, condition = nil)
-        @subject = subject
-        @condition = "subject #{condition}"
-      end
+    def initialize(hash, **opts)
+      @default_options = {}
 
-      def eq_to(value)
-        @condition += "==#{value}"
-      end
+      @default_options = opts
 
-      def be_in(value)
-        @condition += " be in #{value}"
-      end
+      @parent_query = nil
+
+      @default_options[:must] ||= false
+      @default_options[:inverse] ||= false
+
+      @query_hash = to_query_hash(hash)
     end
 
-    attr_accessor :query_statements
+    def to_query_hash(hash, **opts)
+      result = {}
 
-    ALLOWED_FILTERS = %w[must must_not].freeze
+      hash.each_pair do |key, value|
+        value = to_query_hash(value, opts) if value.instance_of? Hash
 
-    def initialize
-      @query_statements = []
-    end
-
-    ALLOWED_FILTERS.each do |filter|
-      define_method(filter) do |*args|
-        query_statement = QueryStatement.new(args.first, filter)
-        query_statement.subject = args.first
-
-        @query_statements << query_statement
-
-        query_statement
+        result[key] = { value: value }.merge(@default_options).merge(opts)
       end
+
+      result
     end
 
-    def describe(attribute, &block)
-      query = Query.new
+    def inverse!(hash = nil)
+      result = {}
 
-      query.instance_eval(&block)
+      hash ||= @query_hash
 
-      query.query_statements.each do |statement|
-        subject = "#{attribute}[#{statement.subject}]"
-        @query_statements << QueryStatement.new(subject, statement.condition)
+      hash.each_pair do |key, value|
+        value = inverse(value) if value.instance_of? Hash
+
+        result[key] = { value: value, must: !hash[:must], inverse: !hash[:inverse] }
       end
-    end
-  end
 
-  module InstanceMethods
+      @query_hash = result if hash == @query_hash
+
+      result
+    end
+
     # build_query do
     #   must(:attr1).be_in []
     #   must(:attr2).eq_to value
     #
     #   describe :attr3 do
     #     must(:key_1).be_in
-    #     must_not(:key_2).eq_to value
+    #     must.not(:key_2).eq_to value
     #   end
-    def build_query(&block)
-      query = Query.new
+    # end
+    def self.build_query(&block)
+      query = new({})
 
       query.instance_eval(&block)
 
       query
+    end
+
+    def add_statements(&block)
+      instance_eval(&block)
+    end
+
+    def must(attribute = nil)
+      query = if attribute.nil?
+                Query.new({}, must: true)
+              else
+                Query.new({attribute => nil}, must: true)
+              end
+
+      query.send('parent_query=', self)
+
+
+      query
+    end
+
+    def should(attribute = nil)
+      query = if attribute.nil?
+                Query.new({}, must: true)
+              else
+                Query.new({attribute => nil}, must: true)
+              end
+
+      query.send('parent_query=', self)
+
+      query
+    end
+
+    def not(attribute)
+      @default_options[:inverse] = true
+
+      @query_hash = to_query_hash({attribute => nil})
+
+      self
+    end
+
+    def be(value)
+      key = @query_hash.keys.first
+
+      @query_hash[key][:value] = value
+
+      merge_to_parent!
+    end
+
+    def describe(attribute, &block)
+      query = Query.new({})
+
+      query.instance_eval(&block)
+
+      puts query.inspect
+
+      @query_hash.merge!({attribute => query.query_hash})
+    end
+
+    private
+
+    def parent_query=(query)
+      @parent_query = query
+    end
+
+    def merge_to_parent!
+      @parent_query.query_hash.merge!(@query_hash)
     end
   end
 end
