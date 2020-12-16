@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module SearchEngine
+module SearchEnjoy
   class QueryResult < Array
     attr_writer :parent_class
 

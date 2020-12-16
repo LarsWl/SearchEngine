@@ -1,4 +1,4 @@
-module SearchEngine
+module SearchEnjoy
   module Dumping
     def self.included(base)
       base.class_eval do

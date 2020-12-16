@@ -16,11 +16,11 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
-require_relative '../lib/search_engine/schema'
-require_relative '../lib/search_engine/indexing'
-require_relative '../lib/search_engine/query'
-require_relative '../lib/search_engine/searching'
-require_relative '../lib/search_engine'
+require_relative '../lib/search_enjoy/schema'
+require_relative '../lib/search_enjoy/indexing'
+require_relative '../lib/search_enjoy/query'
+require_relative '../lib/search_enjoy/searching'
+require_relative '../lib/search_enjoy'
 require 'dry-schema'
 
 RSpec.configure do |config|

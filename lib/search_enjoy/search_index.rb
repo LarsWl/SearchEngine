@@ -1,4 +1,4 @@
-module SearchEngine
+module SearchEnjoy
   class SearchIndex < Hash
     def initialize(*several_variants, index_schema: nil)
       super

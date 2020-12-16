@@ -43,14 +43,13 @@ describe 'Searching' do
     end
 
     it 'make aggregations' do
-      start = Time.now
-      aggr = DummyIndexingModel.aggregate(:attr1)
-      _end =Time.now
+      aggregation = DummyIndexingModel.aggregate(:attr1)
 
-      puts _end - start
-      difference = DummyIndexingModel.aggregate(:attr1).difference(expected_aggregation)
+      puts aggregation.inspect
+      puts expected_aggregation.inspect
+
+      difference = DummyIndexingModel.aggregate(:attr1).to_a.difference(expected_aggregation)
       expect(difference).to eq([])
-
     end
   end
 end

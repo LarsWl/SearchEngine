@@ -1,4 +1,4 @@
-module SearchEngine
+module SearchEnjoy
   module Aggregation
     def self.included(base)
       base.class_eval do
@@ -25,8 +25,6 @@ module SearchEngine
 
           key_values.first.each do |value|
             count = search(key => value).size
-
-            puts [value, key, count].inspect
 
             data_hash = {
                 value: value,

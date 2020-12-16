@@ -3,7 +3,7 @@
 require_relative '../spec_helper'
 
 class DummyIndexingModel
-  include SearchEngine
+  include SearchEnjoy
 
   attr_accessor :id, :attr1, :attr2, :attr3
 

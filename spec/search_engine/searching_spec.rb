@@ -31,7 +31,7 @@ describe 'Searching' do
 
     describe '#search' do
       it 'search for query' do
-        query = SearchEngine::Query.build_query do
+        query = SearchEnjoy::Query.build_query do
           must(:attr1).be 0
 
           describe :attr3 do

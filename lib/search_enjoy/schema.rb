@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module SearchEngine
+module SearchEnjoy
   # Module responsible for defining index schema
   module Schema
     def self.included(base)

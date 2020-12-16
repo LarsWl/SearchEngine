@@ -2,7 +2,7 @@
 
 require_relative './query'
 
-module SearchEngine
+module SearchEnjoy
   module Searching
     def self.included(base)
       base.class_eval do
@@ -71,10 +71,8 @@ module SearchEngine
     module ClassMethods
       def search(*args)
         conditions = if args.first.instance_of? Query
-                       puts 'here'
                        args.first.query_hash
                      else
-                       puts 'here2'
                        Query.new({**args.first}).query_hash
                      end
 

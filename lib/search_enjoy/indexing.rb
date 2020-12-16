@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'json'
 
-module SearchEngine
+module SearchEnjoy
   # Module responsible for indexing elements in collection
   module Indexing
     def self.included(base)
