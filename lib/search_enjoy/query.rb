@@ -99,9 +99,9 @@ module SearchEnjoy
 
     def should(attribute = nil)
       query = if attribute.nil?
-                Query.new({}, must: true)
+                Query.new({}, must: false)
               else
-                Query.new({attribute => nil}, must: true)
+                Query.new({attribute => nil}, must: false)
               end
 
       query.send('parent_query=', self)
